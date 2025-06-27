@@ -1,0 +1,10 @@
+# YAY Partner API Credentials
+# Copy this file to .envrc and fill in your actual credentials
+# Then run: direnv allow
+
+export YAY_PARTNER_USERNAME="your_partner_username"
+export YAY_PARTNER_PASSWORD="your_partner_password"
+export YAY_PARTNER_USER_AGENT="YourCompany/1.0"
+export YAY_PARTNER_ENVIRONMENT="sandbox"  # or "production"
+
+export PHP_CS_FIXER_IGNORE_ENV=1
