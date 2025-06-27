@@ -24,28 +24,14 @@ composer require yay-photobooks/partner-sdk
 
 ### 1. Environment Setup
 
-Create a `.envrc` file in your project root:
+Set the variables as shown in the .envrc.example.
 
-```bash
-# YAY Partner API Credentials
-export YAY_PARTNER_USERNAME="your_partner_username"
-export YAY_PARTNER_PASSWORD="your_partner_password"
-export YAY_PARTNER_USER_AGENT="YourCompany/1.0"
-export YAY_PARTNER_ENVIRONMENT="sandbox"  # or "production"
-```
+When you use direnv, its as simple as copying and modifiny .envrc.example
 
-**Using direnv (recommended):**
 ```bash
 # Install direnv: https://direnv.net/docs/installation.html
+cp .envrc.example .envrc
 direnv allow
-```
-
-**Alternative: Load manually in your code:**
-```php
-putenv('YAY_PARTNER_USERNAME=your_partner_username');
-putenv('YAY_PARTNER_PASSWORD=your_partner_password');
-putenv('YAY_PARTNER_USER_AGENT=YourCompany/1.0');
-putenv('YAY_PARTNER_ENVIRONMENT=sandbox');
 ```
 
 ### 2. Create a Photobook Project
@@ -56,20 +42,20 @@ putenv('YAY_PARTNER_ENVIRONMENT=sandbox');
 require_once 'vendor/autoload.php';
 
 use YAY\PartnerSDK\Client;
-use YAY\PartnerSDK\DTO\Request\CreateProjectDto;
-use YAY\PartnerSDK\DTO\Request\CustomerDto;
-use YAY\PartnerSDK\DTO\Request\AddressDto;
-use YAY\PartnerSDK\DTO\Request\UploadDto;
+use YAY\PartnerSDK\Dto\V1\CreateProjectRequest;
+use YAY\PartnerSDK\Dto\V1\Customer;
+use YAY\PartnerSDK\Dto\V1\Address;
+use YAY\PartnerSDK\Dto\V1\Upload;
 
 $client = new Client();
 
-$project = new CreateProjectDto(
+$project = new CreateProjectRequest(
     title: "Sarah & Mike's Wedding Album",
-    customer: new CustomerDto(
+    customer: new Customer(
         firstname: "Sarah",
         lastname: "Mueller", 
         email: "sarah.mueller@gmail.com",
-        address: new AddressDto(
+        address: new Address(
             line1: "Musterstraße 123",
             line2: "Apartment 4B",
             city: "Berlin",
@@ -77,7 +63,7 @@ $project = new CreateProjectDto(
             country: "DE"
         )
     ),
-    upload: new UploadDto(
+    upload: new Upload(
         numberOfImages: 150,
         coverUrl: "https://my-photo-app.example.com/images/wedding-cover.jpg",
         photoUrls: [
@@ -160,32 +146,32 @@ if ($result->isError()) {
 
 ## API Reference
 
-### CreateProjectDto
+### CreateProjectRequest
 
 ```php
-new CreateProjectDto(
+new CreateProjectRequest(
     title: string,           // Project title
-    customer: CustomerDto,   // Customer information
-    upload: UploadDto,       // Upload metadata
+    customer: Customer,   // Customer information
+    upload: Upload,       // Upload metadata
     locale: string          // Locale (e.g., "de_DE", "en_US")
 )
 ```
 
-### CustomerDto
+### Customer
 
 ```php
-new CustomerDto(
+new Customer(
     firstname: string,       // Customer first name
     lastname: string,        // Customer last name
     email: string,          // Customer email address
-    address: AddressDto     // Customer address
+    address: Address     // Customer address
 )
 ```
 
-### AddressDto
+### Address
 
 ```php
-new AddressDto(
+new Address(
     line1: string,          // Address line 1
     line2: string,          // Address line 2 (can be empty)
     city: string,           // City
@@ -194,10 +180,10 @@ new AddressDto(
 )
 ```
 
-### UploadDto
+### Upload
 
 ```php
-new UploadDto(
+new Upload(
     numberOfImages: int,      // Total number of images
     coverUrl: string,         // URL of the cover image
     photoUrls: ?array        // Optional array of photo URLs
