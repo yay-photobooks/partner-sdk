@@ -1,0 +1,56 @@
+{
+    "name": "yay-photobooks/partner-sdk",
+    "description": "PHP SDK for YAY Photobook Partner API - Create beautiful photobooks programmatically",
+    "type": "library",
+    "license": "MIT",
+    "keywords": ["yay", "photobook", "api", "sdk", "partner"],
+    "homepage": "https://github.com/yay-photobooks/partner-sdk",
+    "support": {
+        "issues": "https://github.com/yay-photobooks/partner-sdk/issues",
+        "source": "https://github.com/yay-photobooks/partner-sdk"
+    },
+    "authors": [
+        {
+            "name": "YAY Photobooks",
+            "email": "support@yaymemories.com",
+            "homepage": "https://yaymemories.com"
+        }
+    ],
+    "require": {
+        "php": ">=8.0",
+        "symfony/http-client": "^6.0|^7.0",
+        "psr/http-message": "^1.0|^2.0",
+        "psr/http-client": "^1.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.0|^10.0|^11.0",
+        "phpstan/phpstan": "^1.0",
+        "friendsofphp/php-cs-fixer": "^3.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "YAY\\PartnerSDK\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "YAY\\PartnerSDK\\Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "optimize-autoloader": true,
+        "preferred-install": "dist"
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "scripts": {
+        "test": "phpunit",
+        "phpstan": "phpstan analyse src --level=8",
+        "cs-fix": "php-cs-fixer fix",
+        "check": [
+            "@phpstan",
+            "@test"
+        ]
+    }
+}
