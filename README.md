@@ -4,7 +4,7 @@
 [![License](https://img.shields.io/packagist/l/yay-photobooks/partner-sdk.svg)](https://packagist.org/packages/yay-photobooks/partner-sdk)
 [![PHP Version](https://img.shields.io/packagist/php-v/yay-photobooks/partner-sdk.svg)](https://packagist.org/packages/yay-photobooks/partner-sdk)
 
-A simple, type-safe PHP SDK for integrating with the YAY Photobook Partner API. Create beautiful photobooks programmatically for your customers.
+A simple, type-safe PHP SDK for integrating with the YAY Photobook Partner API. Enable YAY to create beautiful photobooks for your customers.
 
 ## Features
 
@@ -78,7 +78,7 @@ $project = new CreateProjectRequest(
 $result = $client->createProject($project);
 
 if ($result->isSuccess()) {
-    $response = $result->getData();
+    $response = $result->getResult();
     echo "✅ Project created successfully!\n";
     echo "Project ID: " . $response->projectId . "\n";
     echo "Redirect your customer to: " . $response->redirectUrl . "\n";

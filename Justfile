@@ -6,8 +6,8 @@ export COLUMNS := '550'
 default:
   @just --list
 
-php := "php"
-composer := "composer"
+php := "/usr/bin/php8.2"
+composer := "/usr/bin/php8.2 /usr/local/bin/composer"
 
 # Install dependencies
 install:
@@ -33,19 +33,11 @@ fix *args='-v':
 composer *args='':
     {{ composer }} "${@}"
 
-# Generate PHPStan baseline
-phpstan-baseline:
-    just phpstan analyse --generate-baseline=phpstan-baseline.neon
-
-# Run all quality checks
-check:
-    just phpstan
-    just phpunit
-
 # Prepare for commit (fix style, run checks)
 prep:
     just fix
-    just check
+    just phpstan
+    just phpunit
 
 # Run the example
 example:

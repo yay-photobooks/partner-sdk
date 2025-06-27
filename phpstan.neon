@@ -1,0 +1,11 @@
+includes:
+    - vendor/phpstan/phpstan-phpunit/extension.neon
+
+parameters:
+    level: max
+    paths:
+        - src
+        - tests
+        - examples
+
+    editorUrl: 'phpstorm://open?file=%%file%%&line=%%line%%&project=partner-sdk'

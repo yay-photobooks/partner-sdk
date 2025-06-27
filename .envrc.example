@@ -7,4 +7,5 @@ export YAY_PARTNER_PASSWORD="your_partner_password"
 export YAY_PARTNER_USER_AGENT="YourCompany/1.0"
 export YAY_PARTNER_ENVIRONMENT="sandbox"  # or "production"
 
-export PHP_CS_FIXER_IGNORE_ENV=1
+# if you run in php8.4
+#export PHP_CS_FIXER_IGNORE_ENV=1
