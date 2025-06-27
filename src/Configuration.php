@@ -11,6 +11,7 @@ final class Configuration
 {
     private const SANDBOX_BASE_URL = 'https://sandbox.yaymemories.com/papi/';
     private const PRODUCTION_BASE_URL = 'https://portal.yaymemories.com/papi/';
+    private const DEV_BASE_URL = 'https://photobooks-portal.local.dev/papi/';
 
     public function __construct(
         private string $username,
@@ -72,6 +73,7 @@ final class Configuration
         return match ($this->environment) {
             'sandbox' => self::SANDBOX_BASE_URL,
             'production' => self::PRODUCTION_BASE_URL,
+            'dev' => self::DEV_BASE_URL,
             default => throw new RuntimeException("Invalid environment: {$this->environment}")
         };
     }
@@ -88,7 +90,7 @@ final class Configuration
 
     private function validateEnvironment(string $environment): void
     {
-        if (!in_array($environment, ['sandbox', 'production'], true)) {
+        if (!in_array($environment, ['sandbox', 'production', 'dev'], true)) {
             throw new RuntimeException(
                 "Invalid environment '{$environment}'. Must be 'sandbox' or 'production'."
             );

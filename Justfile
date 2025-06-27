@@ -9,6 +9,13 @@ default:
 php := "/usr/bin/php8.2"
 composer := "/usr/bin/php8.2 /usr/local/bin/composer"
 
+php *args='':
+  {{ php }} "${@}"
+
+# Run composer commands
+composer *args='':
+    {{ composer }} "${@}"
+
 # Install dependencies
 install:
     {{ composer }} install
@@ -28,10 +35,6 @@ phpunit *args='':
 # Fix code style with PHP-CS-Fixer
 fix *args='-v':
     {{ php }} vendor/bin/php-cs-fixer fix "${@}"
-
-# Run composer commands
-composer *args='':
-    {{ composer }} "${@}"
 
 # Prepare for commit (fix style, run checks)
 prep:
