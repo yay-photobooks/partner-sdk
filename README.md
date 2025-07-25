@@ -1,10 +1,17 @@
-# YAY Partner SDK
+# YAY Partner SDK (PHP)
 
 [![Latest Version](https://img.shields.io/packagist/v/yay-photobooks/partner-sdk.svg)](https://packagist.org/packages/yay-photobooks/partner-sdk)
 [![License](https://img.shields.io/packagist/l/yay-photobooks/partner-sdk.svg)](https://packagist.org/packages/yay-photobooks/partner-sdk)
 [![PHP Version](https://img.shields.io/packagist/php-v/yay-photobooks/partner-sdk.svg)](https://packagist.org/packages/yay-photobooks/partner-sdk)
 
 A simple, type-safe PHP SDK for integrating with the YAY Photobook Partner API. Enable YAY to create beautiful photobooks for your customers.
+
+## Not using PHP? 
+
+We use a Rest API that you can query with every language that supports HTTP Requests:
+
+[Rest API Documentation](https://yay.stoplight.io/docs/photobook-partner-api)
+
 
 ## Features
 
@@ -224,13 +231,9 @@ composer check
 
 ## Support
 
-- 📖 **Documentation**: [YAY Partner API Docs](https://docs.yaymemories.com/partner-api)
+- 📖 **Documentation**: [Rest API Documentation](https://yay.stoplight.io/docs/photobook-partner-api)
 - 🐛 **Issues**: [GitHub Issues](https://github.com/yay-photobooks/partner-sdk/issues)
 - 💬 **Support**: support@yaymemories.com
-
-## Contributing
-
-We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
 
 ## License
 
@@ -238,4 +241,4 @@ This SDK is open-source software licensed under the [MIT License](LICENSE).
 
 ---
 
-Made with ❤️ by [YAY Photobooks](https://yaymemories.com)
+Made with ❤️ by [YAY Photobooks](https://yayphotobooks.com)
