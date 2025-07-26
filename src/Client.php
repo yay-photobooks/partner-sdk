@@ -63,7 +63,17 @@ final class Client
             'json' => $requestData
         ]);
 
+        if ($response->getStatusCode() === 401) {
+            throw ServerErrorException::unauthorized($response);
+        }
+
         if ($response->getStatusCode() !== 201) {
+            $raw = $response->getContent(false);
+
+            if (empty($raw)) {
+                throw ServerErrorException::unknownHttpProblem($response);
+            }
+
             $body = $response->toArray(false);
             throw ServerErrorException::fromResponse($body, $response);
         }

@@ -44,7 +44,7 @@ prep:
 
 # Run the example
 example:
-    {{ php }} example.php
+    {{ php }} examples/create-project.php
 
 # Show current configuration
 config:

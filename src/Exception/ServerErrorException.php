@@ -32,6 +32,25 @@ class ServerErrorException extends \Exception
         );
     }
 
+    public static function unknownHttpProblem(ResponseInterface $response): self
+    {
+        return new self(
+            problem: ApiProblem::fromArray([
+                'type' => 'http',
+                'status' => $response->getStatusCode()
+            ]),
+            response: $response,
+        );
+    }
+
+    public static function unauthorized(ResponseInterface $response): self
+    {
+        return new self(
+            problem: new ApiProblem('http', 'Unauthorized', 'Did you submit the correct credentials?', $response->getStatusCode()),
+            response: $response
+        );
+    }
+
     public function getDebug(): string
     {
         $debug = $this->response->getInfo('debug');

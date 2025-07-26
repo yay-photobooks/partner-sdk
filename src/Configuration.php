@@ -9,8 +9,8 @@ use YAY\PartnerSDK\Exception\RuntimeException;
 
 final class Configuration
 {
-    private const SANDBOX_BASE_URL = 'https://sandbox.yaymemories.com/papi/';
-    private const PRODUCTION_BASE_URL = 'https://portal.yaymemories.com/papi/';
+    private const SANDBOX_BASE_URL = 'https://sandbox.yayphotobooks.com/papi/';
+    private const PRODUCTION_BASE_URL = 'https://portal.yayphotobooks.com/papi/';
     private const DEV_BASE_URL = 'https://photobooks-portal.local.dev/papi/';
 
     public function __construct(

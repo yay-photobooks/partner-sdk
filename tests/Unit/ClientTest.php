@@ -56,7 +56,7 @@ final class ClientTest extends TestCase
             body: json_encode($expectedResponseData, JSON_THROW_ON_ERROR),
             info: [
                 'http_code' => 201,
-                'url' => 'https://sandbox.yaymemories.com/papi/projects',
+                'url' => 'https://sandbox.yayphotobooks.com/papi/projects',
                 'debug' => 'Request successful'
             ]
         );
@@ -90,7 +90,7 @@ final class ClientTest extends TestCase
             body: json_encode($errorResponseData, JSON_THROW_ON_ERROR),
             info: [
                 'http_code' => 400,
-                'url' => 'https://sandbox.yaymemories.com/papi/projects'
+                'url' => 'https://sandbox.yayphotobooks.com/papi/projects'
             ]
         );
 
@@ -125,7 +125,7 @@ final class ClientTest extends TestCase
         $this->assertThatArray($this->innerClient->getTracedRequests())
             ->length(1)
             ->key(0)
-                ->key('url', 'https://sandbox.yaymemories.com/papi/projects')->end()
+                ->key('url', 'https://sandbox.yayphotobooks.com/papi/projects')->end()
                 ->key('method', 'POST')->end()
                 ->key('options')
                     ->key('json')
@@ -215,8 +215,76 @@ final class ClientTest extends TestCase
         $this->assertThatArray($this->innerClient->getTracedRequests())
             ->length(1)
             ->key(0)
-                ->key('url', 'https://portal.yaymemories.com/papi/projects')->end()
+                ->key('url', 'https://portal.yayphotobooks.com/papi/projects')->end()
         ;
+    }
+
+    public function testCreateProjectWithWrongCredentials(): void
+    {
+        $mockResponse = new MockResponse(
+            body: '',
+            info: [
+                'http_code' => 401,
+                'url' => 'https://sandbox.yayphotobooks.com/papi/projects',
+                'debug' => "HTTP/1.1 401 Unauthorized\r\n
+    < Server: nginx/1.28.0\r\n
+    < Content-Type: application/json\r\n
+    < Transfer-Encoding: chunked\r\n
+    < X-Powered-By: PHP/8.4.10\r\n
+    < Cache-Control: max-age=0, must-revalidate, private\r\n
+    < Date: Sat, 26 Jul 2025 15:21:55 GMT\r\n
+    < WWW-Authenticate: Basic realm=\"YAY Partner API\"\r\n",
+            ]
+        );
+
+        $client = $this->setupClient([$mockResponse]);
+
+        $this->expectException(ServerErrorException::class);
+        try {
+            $client->createProject($this->createValidProjectRequest());
+        } catch (ServerErrorException $e) {
+            $problem = $e->problem;
+
+            $this->assertSame(401, $problem->status);
+            $this->assertSame('http', $problem->type);
+            $this->assertSame('Unauthorized', $problem->title);
+            $this->assertSame('Did you submit the correct credentials?', $problem->detail);
+
+            throw $e;
+        }
+    }
+
+    public function testCreateProjectWithOtherUnknownErrors(): void
+    {
+        $mockResponse = new MockResponse(
+            body: '',
+            info: [
+                'http_code' => 500,
+                'url' => 'https://sandbox.yayphotobooks.com/papi/projects',
+                'debug' => "HTTP/1.1 500 ServerError\r\n
+    < Server: nginx/1.28.0\r\n
+    < Transfer-Encoding: chunked\r\n
+    < X-Powered-By: PHP/8.4.10\r\n
+    < Cache-Control: max-age=0, must-revalidate, private\r\n
+    < Date: Sat, 26 Jul 2025 15:21:55 GMT\r\n"
+            ]
+        );
+
+        $client = $this->setupClient([$mockResponse]);
+
+        $this->expectException(ServerErrorException::class);
+        try {
+            $client->createProject($this->createValidProjectRequest());
+        } catch (ServerErrorException $e) {
+            $problem = $e->problem;
+
+            $this->assertSame(500, $problem->status);
+            $this->assertSame('http', $problem->type);
+            $this->assertSame('Unknown Error', $problem->title);
+            $this->assertSame('An unknown error occurred', $problem->detail);
+
+            throw $e;
+        }
     }
 
     private function createValidProjectRequest(): V1\CreateProjectRequest

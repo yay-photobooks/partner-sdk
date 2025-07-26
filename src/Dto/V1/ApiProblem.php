@@ -38,7 +38,7 @@ final class ApiProblem
             $body['detail'] = 'An unknown error occurred';
         }
         if (!is_int($body['status'] ?? null)) {
-            $body['status'] = 99999;
+            $body['status'] = 418;
         }
         if (!is_string($body['instance'] ?? null)) {
             $body['instance'] = null;
