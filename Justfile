@@ -51,3 +51,7 @@ config:
     @echo "Environment: ${YAY_PARTNER_ENVIRONMENT:-not set}"
     @echo "Username: ${YAY_PARTNER_USERNAME:-not set}"
     @echo "User Agent: ${YAY_PARTNER_USER_AGENT:-not set}"
+
+release-interactive: prep
+    echo "run: nvm use ${NVMRC}"
+    release-it
