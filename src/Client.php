@@ -51,6 +51,7 @@ final class Client
             'upload' => [
                 'numberOfImages' => $project->upload->numberOfImages,
                 'coverUrl' => $project->upload->coverUrl,
+                // see photoUrls below
             ],
             'locale' => $project->locale,
         ];
