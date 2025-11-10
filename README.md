@@ -108,12 +108,15 @@ if ($result->isSuccess()) {
 | `YAY_PARTNER_USERNAME` | Your partner API username | `your_partner_username` |
 | `YAY_PARTNER_PASSWORD` | Your partner API password | `your_partner_password` |
 | `YAY_PARTNER_USER_AGENT` | Your application identifier | `YourCompany/1.0` |
-| `YAY_PARTNER_ENVIRONMENT` | API environment | `sandbox` or `production` |
+| `YAY_PARTNER_BASE_URL` | API base URL | `https://sandbox.yayphotobooks.com` |
 
-### API Endpoints
+### API Base URLs
 
-- **Sandbox**: `https://sandbox.yaymemories.com/papi/`
-- **Production**: `https://portal.yaymemories.com/papi/`
+- **Sandbox**: `https://sandbox.yayphotobooks.com`
+- **Production**: `https://portal.yayphotobooks.com`
+- **Development**: `https://photobooks-portal.local.dev`
+
+The `.envrc` file automatically sets `YAY_PARTNER_BASE_URL` based on your `YAY_PARTNER_ENVIRONMENT` setting.
 
 ## Error Handling
 

@@ -17,26 +17,27 @@ try {
     try {
         $response = $client->createProject(
             new V1\CreateProjectRequest(
-                title: "Sarah & Mike's Wedding Album",
+                title: "Lara & Kens's Wedding Album",
                 customer: new V1\Customer(
-                    firstname: "Sarah",
-                    lastname: "Mueller",
+                    firstname: "Lara",
+                    lastname: "Croft",
                     email: "sarah.mueller@gmail.com",
                     address: new V1\Address(
                         line1: "Musterstraße 123",
                         line2: "Apartment 4B",
-                        city: "Berlin",
+                        city: "Frankfurt",
                         postalCode: "10115",
                         country: "DE"
                     )
                 ),
                 upload: new V1\Upload(
-                    numberOfImages: 150,
-                    coverUrl: "https://my-photo-app.example.com/images/wedding-cover.jpg",
+                    numberOfImages: 800,
+                    coverUrl: "https://picsum.photos/1000/800.jpg",
                     photoUrls: [
-                        "https://my-photo-app.example.com/photos/img001.jpg",
-                        "https://my-photo-app.example.com/photos/img002.jpg",
-                        "https://my-photo-app.example.com/photos/img003.jpg",
+                        "https://picsum.photos/seed/wedding1/1000/800.jpg",
+                        "https://picsum.photos/seed/wedding2/1000/800.jpg",
+                        "https://picsum.photos/seed/wedding3/1000/800.jpg",
+                        "https://picsum.photos/seed/wedding4/1000/800.jpg",
                     ]
                 ),
                 locale: "de_DE"

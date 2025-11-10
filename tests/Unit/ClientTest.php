@@ -38,7 +38,7 @@ final class ClientTest extends TestCase
                 username: 'test_user',
                 password: 'test_pass',
                 userAgent: 'TestApp/1.0',
-                environment: 'sandbox'
+                baseUrl: 'https://sandbox.yayphotobooks.com'
             ),
             $this->innerClient
         );
@@ -196,7 +196,7 @@ final class ClientTest extends TestCase
             username: 'prod_user',
             password: 'prod_pass',
             userAgent: 'ProdApp/1.0',
-            environment: 'production'
+            baseUrl: 'https://portal.yayphotobooks.com'
         );
 
         $client = $this->setupClient([

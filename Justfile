@@ -3,6 +3,18 @@ set positional-arguments
 
 export COLUMNS := '550'
 
+env := env_var_or_default("ENV", "dev")
+
+export YAY_PARTNER_BASE_URL := if env == "sandbox" {
+  "https://sandbox.yayphotobooks.com"
+} else if env == "production" {
+  "https://portal.yayphotobooks.com"
+} else if env == "dev" {
+  "https://photobooks-portal.local.dev"
+} else {
+  env_var_or_default("YAY_PARTNER_BASE_URL", "")
+}
+
 default:
   @just --list
 
@@ -42,13 +54,18 @@ prep:
     just phpstan
     just phpunit
 
-# Run the example
+# Run the example (use ENV=sandbox|production|dev to override)
 example:
     {{ php }} examples/create-project.php
 
+# Run the curl example (use ENV=sandbox|production|dev to override)
+example-curl:
+    bash examples/create-project.sh
+
 # Show current configuration
 config:
-    @echo "Environment: ${YAY_PARTNER_ENVIRONMENT:-not set}"
+    @echo "ENV: {{ env }}"
+    @echo "Base URL: {{ YAY_PARTNER_BASE_URL }}"
     @echo "Username: ${YAY_PARTNER_USERNAME:-not set}"
     @echo "User Agent: ${YAY_PARTNER_USER_AGENT:-not set}"
 

@@ -60,7 +60,7 @@ final class Client
             $requestData['upload']['photoUrls'] = $project->upload->photoUrls;
         }
 
-        $response = $this->httpClient->request('POST', $this->config->getBaseUrl() . 'projects', [
+        $response = $this->httpClient->request('POST', $this->config->getBaseUrl() . '/papi/projects', [
             'json' => $requestData
         ]);
 

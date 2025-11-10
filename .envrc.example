@@ -5,7 +5,4 @@
 export YAY_PARTNER_USERNAME="your_partner_username"
 export YAY_PARTNER_PASSWORD="your_partner_password"
 export YAY_PARTNER_USER_AGENT="YourCompany/1.0"
-export YAY_PARTNER_ENVIRONMENT="sandbox"  # or "production"
-
-# if you run in php8.4
-#export PHP_CS_FIXER_IGNORE_ENV=1
+export YAY_PARTNER_BASE_URL="https://sandbox.yayphotobooks.com"

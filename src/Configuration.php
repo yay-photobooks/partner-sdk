@@ -9,17 +9,13 @@ use YAY\PartnerSDK\Exception\RuntimeException;
 
 final class Configuration
 {
-    private const SANDBOX_BASE_URL = 'https://sandbox.yayphotobooks.com/papi/';
-    private const PRODUCTION_BASE_URL = 'https://portal.yayphotobooks.com/papi/';
-    private const DEV_BASE_URL = 'https://photobooks-portal.local.dev/papi/';
-
     public function __construct(
         private string $username,
         private string $password,
         private string $userAgent,
-        private string $environment,
+        private string $baseUrl,
     ) {
-        $this->validateEnvironment($environment);
+        $this->validateBaseUrl($baseUrl);
         $this->validateUserAgent($userAgent);
     }
 
@@ -40,12 +36,12 @@ final class Configuration
             throw new InvalidArgumentException('YAY_PARTNER_USER_AGENT environment variable is not set');
         }
 
-        $environment = getenv('YAY_PARTNER_ENVIRONMENT');
-        if ($environment === false) {
-            throw new InvalidArgumentException('YAY_PARTNER_ENVIRONMENT environment variable is not set');
+        $baseUrl = getenv('YAY_PARTNER_BASE_URL');
+        if ($baseUrl === false) {
+            throw new InvalidArgumentException('YAY_PARTNER_BASE_URL environment variable is not set');
         }
 
-        return new self($username, $password, $userAgent, $environment);
+        return new self($username, $password, $userAgent, $baseUrl);
     }
 
     public function getUsername(): string
@@ -63,37 +59,23 @@ final class Configuration
         return $this->userAgent;
     }
 
-    public function getEnvironment(): string
-    {
-        return $this->environment;
-    }
-
     public function getBaseUrl(): string
     {
-        return match ($this->environment) {
-            'sandbox' => self::SANDBOX_BASE_URL,
-            'production' => self::PRODUCTION_BASE_URL,
-            'dev' => self::DEV_BASE_URL,
-            default => throw new RuntimeException("Invalid environment: {$this->environment}")
-        };
+        return $this->baseUrl;
     }
 
-    public function isSandbox(): bool
+    private function validateBaseUrl(string $baseUrl): void
     {
-        return $this->environment === 'sandbox';
-    }
+        if (trim($baseUrl) === '') {
+            throw new RuntimeException('Base URL cannot be empty');
+        }
 
-    public function isProduction(): bool
-    {
-        return $this->environment === 'production';
-    }
+        if (!filter_var($baseUrl, FILTER_VALIDATE_URL)) {
+            throw new RuntimeException("Invalid base URL format: '{$baseUrl}'");
+        }
 
-    private function validateEnvironment(string $environment): void
-    {
-        if (!in_array($environment, ['sandbox', 'production', 'dev'], true)) {
-            throw new RuntimeException(
-                "Invalid environment '{$environment}'. Must be 'sandbox' or 'production'."
-            );
+        if (!str_starts_with($baseUrl, 'https://') && !str_starts_with($baseUrl, 'http://')) {
+            throw new RuntimeException("Base URL must start with http:// or https://: '{$baseUrl}'");
         }
     }
 
