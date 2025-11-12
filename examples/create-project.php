@@ -17,11 +17,11 @@ try {
     try {
         $response = $client->createProject(
             new V1\CreateProjectRequest(
-                title: "Lara & Kens's Wedding Album",
+                title: "Sarah und Ben's Wedding Album",
                 customer: new V1\Customer(
-                    firstname: "Lara",
-                    lastname: "Croft",
-                    email: "sarah.mueller@gmail.com",
+                    firstname: "Sarah",
+                    lastname: "Mueller",
+                    email: "sarah.mueller@example.com",
                     address: new V1\Address(
                         line1: "Musterstraße 123",
                         line2: "Apartment 4B",
