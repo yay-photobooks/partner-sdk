@@ -6,11 +6,11 @@
 
 A simple, type-safe PHP SDK for integrating with the YAY Photobook Partner API. Enable YAY to create beautiful photobooks for your customers.
 
-## Not using PHP? 
+## Not using PHP?
 
-We use a Rest API that you can query with every language that supports HTTP Requests:
+We use a REST API that you can query with any language that supports HTTP requests.
 
-[Rest API Documentation](https://yay.stoplight.io/docs/photobook-partner-api)
+The API specification is defined in [`openapi-partner-api.yaml`](openapi-partner-api.yaml) (OpenAPI 3.1).
 
 
 ## Features
@@ -234,7 +234,7 @@ composer check
 
 ## Support
 
-- 📖 **Documentation**: [Rest API Documentation](https://yay.stoplight.io/docs/photobook-partner-api)
+- 📖 **API Specification**: [`openapi-partner-api.yaml`](openapi-partner-api.yaml)
 - 🐛 **Issues**: [GitHub Issues](https://github.com/yay-photobooks/partner-sdk/issues)
 - 💬 **Support**: support@yaymemories.com
 

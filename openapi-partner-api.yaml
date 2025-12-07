@@ -1,0 +1,385 @@
+openapi: 3.1.0
+info:
+  title: YAY Partner + Webhooks API
+  version: '2.0'
+  summary: API to send customers and photos to YAY to enable them to order photobooks
+  description: Create photobook projects for your customers and redirect them to YAY for product selection and ordering
+  contact:
+    name: Philipp
+    email: philipp@yaymemories.com
+  license:
+    name: Proprietary
+    url: 'https://yayphotobooks.com/terms-and-conditions'
+servers:
+  - url: 'https://api.yayphotobooks.com'
+    description: production
+paths:
+  /projects:
+    post:
+      summary: Create new photobook project
+      tags:
+        - Projects
+      responses:
+        '201':
+          description: Project created successfully. Redirect your customer to the returned URL and store the project UUID for future requests.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - redirectUrl
+                  - projectId
+                properties:
+                  redirectUrl:
+                    type: string
+                    format: uri
+                    example: 'https://checkout.yaymemories.com/projects/ABC123/select'
+                    description: URL to redirect your customer for product selection
+                  projectId:
+                    $ref: '#/components/schemas/UUIDv4'
+                    description: Project UUID for tracking and future API calls
+        '400':
+          description: Invalid request data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Invalid or missing credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      operationId: createProject
+      description: |
+        Create a new photobook project for your customer.
+
+        **Options for providing photos:**
+        1. **Immediate**: Include `photoUrls` in this request
+        2. **Zip download**: Use `/projects/{projectId}/provide-photos` endpoint later
+        3. **Individual URLs**: Use `/projects/{projectId}/provide-photo-urls` endpoint later
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+                - customer
+                - upload
+                - locale
+              properties:
+                title:
+                  type:
+                    - string
+                    - 'null'
+                  description: |
+                    Project title chosen by your customer.
+                    Customer can change this during the selection process.
+                  example: Sarah & Mike's Wedding Album
+                customer:
+                  $ref: '#/components/schemas/Customer'
+                upload:
+                  type: object
+                  required:
+                    - numberOfImages
+                    - coverUrl
+                  properties:
+                    numberOfImages:
+                      type: integer
+                      minimum: 1
+                      maximum: 1000
+                      example: 150
+                      description: |
+                        Expected number of images for pricing estimation.
+                        Used for dynamic pricing calculations.
+                    coverUrl:
+                      type: string
+                      format: uri
+                      example: 'https://my-photo-app.example.com/images/wedding-cover.jpg'
+                      description: Cover image URL for product selection customization
+                    photoUrls:
+                      type: array
+                      description: |
+                        Optional: Provide photo URLs immediately instead of using separate provide endpoints.
+                        Maximum 1000 URLs. Use either `photoUrls` OR `photosFolders`, not both.
+                      maxItems: 1000
+                      items:
+                        type: string
+                        format: uri
+                        example: 'https://my-photo-app.example.com/photos/img001.jpg'
+                    photosFolders:
+                      type: array
+                      description: |
+                        Optional: Provide photos organized in folders/sections for better layout creation.
+                        Each folder represents a logical section (e.g., "Getting Ready", "Ceremony", "Reception").
+                        The folder order and photo order within folders is preserved for layout.
+                        Use either `photoUrls` OR `photosFolders`, not both.
+                      items:
+                        $ref: '#/components/schemas/PhotosFolder'
+                      example:
+                        - name: Getting Ready
+                          urls:
+                            - 'https://my-photo-app.example.com/photos/getting-ready-001.jpg'
+                            - 'https://my-photo-app.example.com/photos/getting-ready-002.jpg'
+                        - name: The Ceremony
+                          urls:
+                            - 'https://my-photo-app.example.com/photos/ceremony-001.jpg'
+                            - 'https://my-photo-app.example.com/photos/ceremony-002.jpg'
+                locale:
+                  type: string
+                  pattern: '^[a-z]{2}_[A-Z]{2}$'
+                  example: de_DE
+                  description: Locale for the customer session (e.g. de_DE, en_US). Determines the language used for product selection and communication.
+  '/projects/{projectId}/provide-photos':
+    post:
+      summary: Provide photos via download URL
+      tags:
+        - Projects
+        - Photos
+      responses:
+        '200':
+          description: Download initiated successfully. You will receive a webhook when processing is complete.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum:
+                      - download_started
+                  estimatedProcessingTime:
+                    type: string
+                    example: 5-10 minutes
+        '400':
+          description: Invalid request or project already has photos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Project not found. Ensure the project was created first.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      operationId: providePhotosDownload
+      description: |
+        Provide a download URL for a zip file containing customer photos.
+        We will download and process the photos asynchronously.
+
+        **Supported formats:** ZIP
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - downloadUrl
+              properties:
+                downloadUrl:
+                  type: string
+                  format: uri
+                  description: URL to download the photo archive from your system
+                  example: 'https://my-photo-app.example.com/downloads/wedding-photos-123.zip'
+    parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/UUIDv4'
+        description: Project UUID from project creation response
+  '/projects/{projectId}/provide-photo-urls':
+    post:
+      summary: Provide individual photo URLs
+      tags:
+        - Projects
+        - Photos
+      responses:
+        '200':
+          description: Photo download initiated successfully. You will receive a webhook when processing is complete.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum:
+                      - download_started
+                  photoCount:
+                    type: integer
+                    example: 150
+                  estimatedProcessingTime:
+                    type: string
+                    example: 10-15 minutes
+        '400':
+          description: Invalid request or project already has photos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Project not found. Ensure the project was created first.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      operationId: providePhotoUrls
+      description: |
+        Provide individual photo URLs for download.
+        We will download each photo individually and process them asynchronously.
+
+        **Maximum URLs:** 1000 per request
+        **Supported formats:** JPG, JPEG, PNG, TIFF, HEIC
+        **Maximum file size per image:** 50MB
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - photoUrls
+              properties:
+                photoUrls:
+                  type: array
+                  description: Array of photo URLs to download
+                  minItems: 1
+                  maxItems: 1000
+                  items:
+                    type: string
+                    format: uri
+                    example: 'https://my-photo-app.example.com/photos/wedding-001.jpg'
+                preserveOrder:
+                  type: boolean
+                  default: true
+                  description: Whether to preserve the order of photos in the final photobook
+    parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/UUIDv4'
+        description: Project UUID from project creation response
+components:
+  schemas:
+    Customer:
+      type: object
+      required:
+        - firstname
+        - lastname
+        - email
+        - address
+      properties:
+        firstname:
+          type: string
+          example: Sarah
+          maxLength: 100
+        lastname:
+          type: string
+          example: Mueller
+          maxLength: 100
+        email:
+          type: string
+          format: email
+          example: sarah.mueller@gmail.com
+        address:
+          $ref: '#/components/schemas/Address'
+      example:
+        firstname: Sarah
+        lastname: Mueller
+        email: sarah.mueller@gmail.com
+        address:
+          line1: Musterstraße 123
+          line2: Apartment 4B
+          city: Berlin
+          postal_code: '10115'
+          country: DE
+    Address:
+      type: object
+      required:
+        - line1
+        - city
+        - postal_code
+        - country
+      properties:
+        line1:
+          type: string
+          example: Musterstraße 123
+          maxLength: 200
+        line2:
+          type: string
+          example: Apartment 4B
+          maxLength: 200
+        city:
+          type: string
+          example: Berlin
+          maxLength: 100
+        postal_code:
+          type: string
+          example: '10115'
+          maxLength: 20
+        country:
+          type: string
+          pattern: '^[A-Z]{2}$'
+          example: DE
+          description: ISO 3166-1 alpha-2 country code
+    PhotosFolder:
+      type: object
+      description: A folder/section containing related photos for organized layout creation
+      required:
+        - name
+        - urls
+      properties:
+        name:
+          type: string
+          maxLength: 100
+          description: Display name for this folder/section (e.g., "Getting Ready", "The Ceremony")
+          example: Getting Ready
+        urls:
+          type: array
+          description: Photo URLs in this folder. Order is preserved for layout.
+          minItems: 1
+          maxItems: 500
+          items:
+            type: string
+            format: uri
+            example: 'https://my-photo-app.example.com/photos/img001.jpg'
+        metadata:
+          type: object
+          description: |
+            Optional arbitrary metadata for this folder.
+            You can include any key-value pairs relevant to your use case.
+          additionalProperties: true
+          example:
+            description: Photos from the morning preparation
+            date: '2025-07-12'
+            isCoverBackside: true
+    UUIDv4:
+      type: string
+      format: uuid
+      pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
+      example: 550e8400-e29b-41d4-a716-446655440000
+    Error:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+          example: project_not_found
+        message:
+          type: string
+          example: The specified project could not be found
+        details:
+          type: object
+          description: Additional error details
+  securitySchemes:
+    credentials:
+      type: http
+      scheme: basic
+      description: HTTP Basic Authentication with partner credentials
+security:
+  - credentials: []

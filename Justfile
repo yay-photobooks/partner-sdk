@@ -48,11 +48,16 @@ phpunit *args='':
 fix *args='-v':
     {{ php }} vendor/bin/php-cs-fixer fix "${@}"
 
+# Validate OpenAPI schema
+openapi-validate:
+    npx --yes @redocly/cli lint openapi-partner-api.yaml
+
 # Prepare for commit (fix style, run checks)
 prep:
     just fix
     just phpstan
     just phpunit
+    just openapi-validate
 
 # Run the example (use ENV=sandbox|production|dev to override)
 example:

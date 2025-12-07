@@ -52,6 +52,7 @@
         "test": "phpunit",
         "phpstan": "phpstan analyse src --level=8",
         "cs-fix": "php-cs-fixer fix",
+        "openapi:validate": "npx --yes @redocly/cli lint openapi-partner-api.yaml",
         "check": [
             "@phpstan",
             "@test"
