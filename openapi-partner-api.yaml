@@ -133,7 +133,15 @@ paths:
                   description: Locale for the customer session (e.g. de_DE, en_US). Determines the language used for product selection and communication.
   '/projects/{projectId}/provide-photos':
     post:
-      summary: Provide photos via download URL
+      summary: Provide photos via zip download URL
+      x-status: coming-soon
+      description: |
+        **⚠️ Coming Soon** - This endpoint is not yet available.
+
+        Provide a download URL for a zip file containing customer photos.
+        We will download and process the photos asynchronously.
+
+        **Supported formats:** ZIP
       tags:
         - Projects
         - Photos
@@ -165,11 +173,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
       operationId: providePhotosDownload
-      description: |
-        Provide a download URL for a zip file containing customer photos.
-        We will download and process the photos asynchronously.
-
-        **Supported formats:** ZIP
       requestBody:
         content:
           application/json:
@@ -193,9 +196,19 @@ paths:
   '/projects/{projectId}/provide-photo-urls':
     post:
       summary: Provide individual photo URLs
+      x-status: coming-soon
       tags:
         - Projects
         - Photos
+      description: |
+        **⚠️ Coming Soon** - This endpoint is not yet available.
+
+        Provide individual photo URLs for download.
+        We will download each photo individually and process them asynchronously.
+
+        **Maximum URLs:** 1000 per request
+        **Supported formats:** JPG, JPEG, PNG, TIFF, HEIC
+        **Maximum file size per image:** 50MB
       responses:
         '200':
           description: Photo download initiated successfully. You will receive a webhook when processing is complete.
@@ -208,6 +221,9 @@ paths:
                     type: string
                     enum:
                       - download_started
+                  downloadStatus:
+                    $ref: '#/components/schemas/DownloadStatus'
+                    example: PENDING
                   photoCount:
                     type: integer
                     example: 150
@@ -227,13 +243,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
       operationId: providePhotoUrls
-      description: |
-        Provide individual photo URLs for download.
-        We will download each photo individually and process them asynchronously.
-
-        **Maximum URLs:** 1000 per request
-        **Supported formats:** JPG, JPEG, PNG, TIFF, HEIC
-        **Maximum file size per image:** 50MB
       requestBody:
         content:
           application/json:
@@ -376,6 +385,32 @@ components:
         details:
           type: object
           description: Additional error details
+    ProjectStatus:
+      type: string
+      description: The current status of a photobook project in its lifecycle
+      enum:
+        - TRANSMITTED
+        - PRODUCTS_SELECTED
+        - DRAFT_CREATED
+        - REVIEW_PENDING
+        - CHANGES_REQUESTED
+        - ORDERED
+        - IN_PRODUCTION
+        - SHIPPED
+        - FULFILLED
+      example: DRAFT_CREATED
+    DownloadStatus:
+      type: string
+      description: |
+        Status of photo download/processing.
+        - NONE: Before any URLs or files have been sent
+        - PENDING: Download is in progress
+        - DONE: All photos have been downloaded and processed
+      enum:
+        - NONE
+        - PENDING
+        - DONE
+      example: DONE
   securitySchemes:
     credentials:
       type: http
@@ -383,3 +418,44 @@ components:
       description: HTTP Basic Authentication with partner credentials
 security:
   - credentials: []
+webhooks:
+  projectStatusUpdate:
+    post:
+      summary: Project status update
+      x-status: coming-soon
+      description: |
+        **⚠️ Coming Soon** - This webhook is not yet available.
+
+        This is a request sent **from YAY to your server** when a project's status changes.
+
+        **Retry behavior:**
+        - We retry up to 2 times if you don't respond with 200
+        - We stop immediately on 403 or 404 responses
+
+        Configure your webhook URL in your partner settings.
+      operationId: webhookProjectStatusUpdate
+      tags:
+        - Webhooks
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - projectId
+                - status
+                - downloadStatus
+              properties:
+                projectId:
+                  $ref: '#/components/schemas/UUIDv4'
+                  description: The project this status update relates to
+                status:
+                  $ref: '#/components/schemas/ProjectStatus'
+                  description: Current status of the project
+                downloadStatus:
+                  $ref: '#/components/schemas/DownloadStatus'
+                  description: Status of photo download/processing
+      responses:
+        '200':
+          description: Webhook received successfully
