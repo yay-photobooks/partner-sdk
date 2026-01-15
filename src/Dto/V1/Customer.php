@@ -11,10 +11,14 @@ final class Customer
         public string $lastname,
         public string $email,
         public Address $address,
+        public ?string $phone = null,
     ) {
         $this->validateName($firstname, 'firstname');
         $this->validateName($lastname, 'lastname');
         $this->validateEmail($email);
+        if ($phone !== null) {
+            $this->validatePhone($phone);
+        }
     }
 
     private function validateName(string $name, string $field): void
@@ -36,6 +40,13 @@ final class Customer
 
         if ($email !== strtolower($email)) {
             throw new \YAY\PartnerSDK\Exception\InvalidArgumentException("Email address must be lowercase: {$email}");
+        }
+    }
+
+    private function validatePhone(string $phone): void
+    {
+        if (! preg_match('/^\+[0-9]{7,15}$/', $phone)) {
+            throw new \YAY\PartnerSDK\Exception\InvalidArgumentException("Phone must be in E.164 format (e.g. +4917612345678): {$phone}");
         }
     }
 }

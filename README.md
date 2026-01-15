@@ -60,8 +60,9 @@ $project = new CreateProjectRequest(
     title: "Sarah & Mike's Wedding Album",
     customer: new Customer(
         firstname: "Sarah",
-        lastname: "Mueller", 
+        lastname: "Mueller",
         email: "sarah.mueller@gmail.com",
+        phone: "+4917612345678",
         address: new Address(
             line1: "Musterstraße 123",
             line2: "Apartment 4B",
@@ -173,8 +174,9 @@ new CreateProjectRequest(
 new Customer(
     firstname: string,       // Customer first name
     lastname: string,        // Customer last name
-    email: string,          // Customer email address
-    address: Address     // Customer address
+    email: string,           // Customer email address
+    address: Address,        // Customer address
+    phone: ?string           // Optional: Mobile phone in E.164 format (e.g. +4917612345678)
 )
 ```
 
