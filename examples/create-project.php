@@ -22,6 +22,7 @@ try {
                     firstname: "Sarah",
                     lastname: "Mueller",
                     email: "sarah.mueller@example.com",
+                    phone: "+4917612345678",
                     address: new V1\Address(
                         line1: "Musterstraße 123",
                         line2: "Apartment 4B",

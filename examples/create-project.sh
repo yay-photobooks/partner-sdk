@@ -39,6 +39,7 @@ response=$(curl -X POST "${YAY_PARTNER_BASE_URL}/papi/projects" \
       "firstname": "Sarah",
       "lastname": "Example",
       "email": "lara.croft@example.com",
+      "phone": "+4917612345678",
       "address": {
         "line1": "Musterstraße 123",
         "line2": "Apartment 4B",

@@ -293,12 +293,18 @@ components:
           type: string
           format: email
           example: sarah.mueller@gmail.com
+        phone:
+          type: string
+          pattern: '^\+[0-9]{7,15}$'
+          example: '+4917612345678'
+          description: Mobile phone number in E.164 format (e.g. +4917612345678)
         address:
           $ref: '#/components/schemas/Address'
       example:
         firstname: Sarah
         lastname: Mueller
         email: sarah.mueller@gmail.com
+        phone: '+4917612345678'
         address:
           line1: Musterstraße 123
           line2: Apartment 4B
