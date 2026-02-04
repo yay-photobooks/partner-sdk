@@ -45,7 +45,7 @@ final class Customer
 
     private function validatePhone(string $phone): void
     {
-        if (! preg_match('/^\+[0-9]{7,15}$/', $phone)) {
+        if ($phone != null && $phone != "" && ! preg_match('/^\+[0-9]{7,15}$/', $phone)) {
             throw new \YAY\PartnerSDK\Exception\InvalidArgumentException("Phone must be in E.164 format (e.g. +4917612345678): {$phone}");
         }
     }
