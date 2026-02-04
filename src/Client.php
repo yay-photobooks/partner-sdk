@@ -40,6 +40,7 @@ final class Client
                 'firstname' => $project->customer->firstname,
                 'lastname' => $project->customer->lastname,
                 'email' => $project->customer->email,
+                'phone' => $project->customer->phone,
                 'address' => [
                     'line1' => $project->customer->address->line1,
                     'line2' => $project->customer->address->line2,
