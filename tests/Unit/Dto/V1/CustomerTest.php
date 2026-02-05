@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace YAY\PartnerSDK\Tests\Unit\Dto\V1;
 
+use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 use YAY\PartnerSDK\Dto\V1;
 use YAY\PartnerSDK\Exception\InvalidArgumentException;
@@ -182,5 +183,29 @@ final class CustomerTest extends TestCase
             email: "USER@DOMAIN.COM",
             address: $address,
         );
+    }
+
+    #[TestWith([" "])]
+    #[TestWith([''])]
+    #[TestWith([null])]
+    public function testPhoneNumberAsEmptyStringWillBeNotValidated(?string $phone): void
+    {
+        $address = new V1\Address(
+            line1: "Test Street 1",
+            line2: "",
+            city: "Berlin",
+            postalCode: "10115",
+            country: "DE",
+        );
+
+        $customer = new V1\Customer(
+            firstname: "John",
+            lastname: "Doe",
+            address: $address,
+            email: "john.doe@example.com",
+            phone: $phone,
+        );
+
+        $this->assertNull($customer->phone);
     }
 }
