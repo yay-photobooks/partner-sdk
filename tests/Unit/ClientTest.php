@@ -120,7 +120,7 @@ final class ClientTest extends TestCase
             info: ['http_code' => 201]
         )]);
 
-        $client->createProject($this->createValidProjectRequest());
+        $client->createProject($this->createValidProjectRequest(withPhone: true));
 
         $this->assertThatArray($this->innerClient->getTracedRequests())
             ->length(1)
@@ -134,6 +134,7 @@ final class ClientTest extends TestCase
                             ->key('firstname', 'Sarah')->end()
                             ->key('lastname', 'Mueller')->end()
                             ->key('email', 'sarah.mueller@gmail.com')->end()
+                            ->key('phone', '+49123456789')->end()
                             ->key('address')
                                 ->key('line1', 'Musterstraße 123')->end()
                                 ->key('line2', 'Apartment 4B')->end()
@@ -153,6 +154,34 @@ final class ClientTest extends TestCase
                         ->key('locale', 'de_DE')->end()
                     ->end()
                 ->end()
+            ->end();
+    }
+
+    public function testCreateProjectWithoutCustomerPhone(): void
+    {
+        $client = $this->setupClient([new MockResponse(
+            body: json_encode([
+                'projectId' => '550e8400-e29b-41d4-a716-446655440000',
+                'redirectUrl' => 'https://checkout.yaymemories.com/projects/test/select'
+            ], JSON_THROW_ON_ERROR),
+            info: ['http_code' => 201]
+        )]);
+
+        $client->createProject($this->createValidProjectRequest(withPhone: false));
+
+        $this->assertThatArray($this->innerClient->getTracedRequests())
+            ->length(1)
+            ->key(0)
+                ->key('url', 'https://sandbox.yayphotobooks.com/papi/projects')->end()
+                ->key('method', 'POST')->end()
+                ->key('options')
+                    ->key('json')
+                        ->key('title', "Sarah & Mike's Wedding Album")->end()
+                        ->key('customer')
+                            ->key('firstname', 'Sarah')->end()
+                            ->key('lastname', 'Mueller')->end()
+                            ->key('email', 'sarah.mueller@gmail.com')->end()
+                            ->key('phone', null)->end()
             ->end();
     }
 
@@ -287,11 +316,11 @@ final class ClientTest extends TestCase
         }
     }
 
-    private function createValidProjectRequest(): V1\CreateProjectRequest
+    private function createValidProjectRequest(bool $withPhone = false): V1\CreateProjectRequest
     {
         return new V1\CreateProjectRequest(
             title: "Sarah & Mike's Wedding Album",
-            customer: Fixtures::createValidCustomer(),
+            customer: Fixtures::createValidCustomer(withPhone: $withPhone),
             upload: new V1\Upload(
                 numberOfImages: 150,
                 coverUrl: 'https://my-photo-app.example.com/images/wedding-cover.jpg',

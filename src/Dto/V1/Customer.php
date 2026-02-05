@@ -16,9 +16,7 @@ final class Customer
         $this->validateName($firstname, 'firstname');
         $this->validateName($lastname, 'lastname');
         $this->validateEmail($email);
-        if ($phone !== null) {
-            $this->validatePhone($phone);
-        }
+        $this->phone = $this->validatePhone($this->phone);
     }
 
     private function validateName(string $name, string $field): void
@@ -43,10 +41,20 @@ final class Customer
         }
     }
 
-    private function validatePhone(string $phone): void
+    private function validatePhone(?string $phone): ?string
     {
+        if ($phone === null) {
+            return null;
+        }
+
+        if (trim($phone) === '') {
+            return null;
+        }
+
         if (! preg_match('/^\+[0-9]{7,15}$/', $phone)) {
             throw new \YAY\PartnerSDK\Exception\InvalidArgumentException("Phone must be in E.164 format (e.g. +4917612345678): {$phone}");
         }
+
+        return $phone;
     }
 }
