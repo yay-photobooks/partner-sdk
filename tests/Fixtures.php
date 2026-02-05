@@ -6,12 +6,13 @@ use YAY\PartnerSDK\Dto\V1;
 
 class Fixtures
 {
-    public static function createValidCustomer(): V1\Customer
+    public static function createValidCustomer(bool $withPhone = false): V1\Customer
     {
         return new V1\Customer(
             firstname: 'Sarah',
             lastname: 'Mueller',
             email: 'sarah.mueller@gmail.com',
+            phone: $withPhone ? '+49123456789' : null,
             address: new V1\Address(
                 line1: 'Musterstraße 123',
                 line2: 'Apartment 4B',
