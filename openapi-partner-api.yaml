@@ -11,10 +11,12 @@ info:
     name: Proprietary
     url: 'https://yayphotobooks.com/terms-and-conditions'
 servers:
-  - url: 'https://api.yayphotobooks.com'
+  - url: 'https://sandbox.yayphotobooks.com'
+    description: sandbox
+  - url: 'https://portal.yayphotobooks.com'
     description: production
 paths:
-  /projects:
+  /papi/projects:
     post:
       summary: Create new photobook project
       tags:
@@ -131,7 +133,7 @@ paths:
                   pattern: '^[a-z]{2}_[A-Z]{2}$'
                   example: de_DE
                   description: Locale for the customer session (e.g. de_DE, en_US). Determines the language used for product selection and communication.
-  '/projects/{projectId}/provide-photos':
+  '/papi/projects/{projectId}/provide-photos':
     post:
       summary: Provide photos via zip download URL
       x-status: coming-soon
@@ -193,7 +195,7 @@ paths:
         schema:
           $ref: '#/components/schemas/UUIDv4'
         description: Project UUID from project creation response
-  '/projects/{projectId}/provide-photo-urls':
+  '/papi/projects/{projectId}/provide-photo-urls':
     post:
       summary: Provide individual photo URLs
       x-status: coming-soon
