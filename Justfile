@@ -21,28 +21,18 @@ default:
 php := "/usr/bin/php8.2"
 composer := "/usr/bin/php8.2 /usr/local/bin/composer"
 
+import '~/yay/claude/justfile-lib.just'
+
 php *args='':
   {{ php }} "${@}"
-
-# Run composer commands
-composer *args='':
-    {{ composer }} "${@}"
 
 # Install dependencies
 install:
     {{ composer }} install
 
-# Run PHPStan static analysis
-phpstan *args='':
-    {{ php }} vendor/bin/phpstan "${@}"
-
 # Watch files and run PHPStan on changes
 watch-phpstan *args='':
     find src/ tests/ -name '*.php' | entr {{ php }} vendor/bin/phpstan "${@}"
-
-# Run PHPUnit tests
-phpunit *args='':
-    {{ php }} vendor/bin/phpunit "${@}"
 
 # Fix code style with PHP-CS-Fixer
 fix *args='-v':

@@ -37,10 +37,7 @@ Redirect your customer using the returned URL to our customized product selectio
 *Note: While customers can select multiple products in bundles, think of each project as one primary photobook to be printed.*
 
 ### 3. Photo Provision
-Provide your customer's photos using one of three methods:
-- **Immediate**: Include `photoUrls` in the initial project creation request
-- **Zip Archive**: Use `POST /projects/{projectId}/provide-photos` with a download URL
-- **Individual URLs**: Use `POST /projects/{projectId}/provide-photo-urls` with an array of photo URLs
+Provide your customer's photos by including `photoUrls` in the initial project creation request.
 
 ### 4. Layout Creation (DRAFT_CREATED)
 Our layout team creates a professional photobook design using your customer's photos and selected format. When complete, the project moves to **DRAFT_CREATED** status.
