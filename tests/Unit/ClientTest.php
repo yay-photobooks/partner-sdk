@@ -185,6 +185,42 @@ final class ClientTest extends TestCase
             ->end();
     }
 
+    public function testCreateProjectSendsNullAddressWhenCustomerHasNoAddress(): void
+    {
+        $client = $this->setupClient([new MockResponse(
+            body: json_encode([
+                'projectId' => '550e8400-e29b-41d4-a716-446655440000',
+                'redirectUrl' => 'https://checkout.yaymemories.com/projects/test/select'
+            ], JSON_THROW_ON_ERROR),
+            info: ['http_code' => 201]
+        )]);
+
+        $client->createProject(
+            new V1\CreateProjectRequest(
+                title: "B2B Preview Project",
+                customer: Fixtures::createValidCustomer(withAddress: false),
+                upload: new V1\Upload(
+                    numberOfImages: 50,
+                    coverUrl: 'https://my-photo-app.example.com/images/cover.jpg',
+                ),
+                locale: 'de_DE',
+            )
+        );
+
+        $this->assertThatArray($this->innerClient->getTracedRequests())
+            ->length(1)
+            ->key(0)
+                ->key('options')
+                    ->key('json')
+                        ->key('customer')
+                            ->key('firstname', 'Sarah')->end()
+                            ->key('address', null)->end()
+                        ->end()
+                    ->end()
+                ->end()
+            ->end();
+    }
+
     public function testCreateProjectWithoutPhotoUrls(): void
     {
         $client = $this->setupClient([

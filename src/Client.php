@@ -34,6 +34,7 @@ final class Client
 
     public function createProject(CreateProjectRequest $project): CreatedProjectResponse
     {
+        $address = $project->customer->address;
         $requestData = [
             'title' => $project->title,
             'customer' => [
@@ -41,12 +42,12 @@ final class Client
                 'lastname' => $project->customer->lastname,
                 'email' => $project->customer->email,
                 'phone' => $project->customer->phone,
-                'address' => [
-                    'line1' => $project->customer->address->line1,
-                    'line2' => $project->customer->address->line2,
-                    'city' => $project->customer->address->city,
-                    'postal_code' => $project->customer->address->postalCode,
-                    'country' => $project->customer->address->country,
+                'address' => $address === null ? null : [
+                    'line1' => $address->line1,
+                    'line2' => $address->line2,
+                    'city' => $address->city,
+                    'postal_code' => $address->postalCode,
+                    'country' => $address->country,
                 ],
             ],
             'upload' => [

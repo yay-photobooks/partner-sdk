@@ -10,7 +10,7 @@ final class Customer
         public string $firstname,
         public string $lastname,
         public string $email,
-        public Address $address,
+        public ?Address $address = null,
         public ?string $phone = null,
     ) {
         $this->validateName($firstname, 'firstname');

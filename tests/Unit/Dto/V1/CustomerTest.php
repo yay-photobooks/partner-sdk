@@ -185,6 +185,46 @@ final class CustomerTest extends TestCase
         );
     }
 
+    public function testCanCreateCustomerWithoutAddress(): void
+    {
+        $customer = new V1\Customer(
+            firstname: "Sarah",
+            lastname: "Mueller",
+            email: "sarah.mueller@gmail.com",
+        );
+
+        $this->assertNull($customer->address);
+        $this->assertSame("Sarah", $customer->firstname);
+        $this->assertSame("Mueller", $customer->lastname);
+        $this->assertSame("sarah.mueller@gmail.com", $customer->email);
+        $this->assertNull($customer->phone);
+    }
+
+    public function testCanCreateCustomerWithExplicitNullAddress(): void
+    {
+        $customer = new V1\Customer(
+            firstname: "John",
+            lastname: "Doe",
+            email: "john.doe@example.com",
+            address: null,
+        );
+
+        $this->assertNull($customer->address);
+    }
+
+    public function testValidationStillAppliesWhenAddressIsNull(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Customer firstname cannot be empty');
+
+        new V1\Customer(
+            firstname: "",
+            lastname: "Doe",
+            email: "john.doe@example.com",
+            address: null,
+        );
+    }
+
     #[TestWith([" "])]
     #[TestWith([''])]
     #[TestWith([null])]

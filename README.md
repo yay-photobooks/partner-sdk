@@ -84,7 +84,31 @@ $project = new CreateProjectRequest(
 );
 
 $result = $client->createProject($project);
+```
 
+### B2B preview-before-checkout (no address)
+
+Partners can create a project before collecting the customer's postal address — the customer
+fills it in during checkout in YAY's own form. See `examples/create-project-no-address.php`.
+
+```php
+$project = new CreateProjectRequest(
+    title: "Sarah & Mike's Wedding Album",
+    customer: new Customer(
+        firstname: "Sarah",
+        lastname: "Mueller",
+        email: "sarah.mueller@gmail.com",
+        // no address — collected at checkout
+    ),
+    upload: new Upload(
+        numberOfImages: 150,
+        coverUrl: "https://my-photo-app.example.com/images/wedding-cover.jpg",
+    ),
+    locale: "de_DE"
+);
+```
+
+```php
 if ($result->isSuccess()) {
     $response = $result->getResult();
     echo "✅ Project created successfully!\n";
@@ -175,8 +199,8 @@ new Customer(
     firstname: string,       // Customer first name
     lastname: string,        // Customer last name
     email: string,           // Customer email address
-    address: Address,        // Customer address
-    phone: ?string           // Optional: Mobile phone in E.164 format (e.g. +4917612345678)
+    address: ?Address = null, // Optional: Omit for B2B preview-before-checkout flows; customer provides it at checkout
+    phone: ?string = null    // Optional: Mobile phone in E.164 format (e.g. +4917612345678)
 )
 ```
 
