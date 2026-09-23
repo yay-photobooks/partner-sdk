@@ -252,9 +252,13 @@ components:
           description: Additional error details
     ProjectStatus:
       type: string
-      description: The current status of a photobook project in its lifecycle
+      description: |
+        The current status of a photobook project in its lifecycle.
+        - TRANSMITTED: All photos were downloaded from your servers
+        - TRANSMISSION_FAILED: Some photos could not be downloaded after all retries. See `failedPhotos`.
       enum:
         - TRANSMITTED
+        - TRANSMISSION_FAILED
         - PRODUCTS_SELECTED
         - DRAFT_CREATED
         - REVIEW_PENDING
@@ -331,6 +335,22 @@ webhooks:
                 downloadStatus:
                   $ref: '#/components/schemas/DownloadStatus'
                   description: Status of photo download/processing
+                failedPhotos:
+                  type: array
+                  description: Only sent with status `TRANSMISSION_FAILED`. The photos we could not download.
+                  items:
+                    type: object
+                    required:
+                      - url
+                      - error
+                    properties:
+                      url:
+                        type: string
+                        format: uri
+                        example: 'https://partner.example/photos/123.jpg'
+                      error:
+                        type: string
+                        example: HTTP 404
       responses:
         '200':
           description: Webhook received successfully

@@ -25,10 +25,9 @@ We're happy to walk you through the lifecycle and explain every step in detail. 
 
 ## Project Flow Overview
 
-### 1. Project Creation (PREPARED)
-The photobook project begins when a customer selects photos in your app. Send a `POST /projects` request to create a new project, which moves it to **PREPARED** status. You'll receive:
+### 1. Project Creation
+The photobook project begins when a customer selects photos in your app. Send a `POST /papi/projects` request to create a new project. You'll receive:
 - A `projectId` for tracking and future API calls
-- A `projectReference` for customer communication
 - A `redirectUrl` to send your customer to our product selection interface
 
 ### 2. Customer Product Selection (PRODUCTS_SELECTED)
@@ -36,8 +35,10 @@ Redirect your customer using the returned URL to our customized product selectio
 
 *Note: While customers can select multiple products in bundles, think of each project as one primary photobook to be printed.*
 
-### 3. Photo Provision
-Provide your customer's photos by including `photoUrls` in the initial project creation request.
+### 3. Photo Transmission (TRANSMITTED / TRANSMISSION_FAILED)
+Provide your customer's photos by including `photoUrls` in the initial project creation request. We download the photos from your servers in the background, while your customer selects products.
+- All photos downloaded → **TRANSMITTED**
+- Some photos cannot be downloaded after all retries → **TRANSMISSION_FAILED**. The webhook lists the failed URLs in `failedPhotos`.
 
 ### 4. Layout Creation (DRAFT_CREATED)
 Our layout team creates a professional photobook design using your customer's photos and selected format. When complete, the project moves to **DRAFT_CREATED** status.
@@ -66,11 +67,9 @@ The photobook enters production (**IN_PRODUCTION**) and is shipped to the custom
 
 ## Quick Start
 
-1. **Create a project**: `POST /projects` with customer details and photo information
+1. **Create a project**: `POST /papi/projects` with customer details and `photoUrls`
 2. **Redirect customer**: Send them to the returned `redirectUrl` for product selection
-3. **Provide photos**: Use one of the three photo provision methods
-4. **Monitor progress**: Receive webhook notifications for all status changes
-5. **Support customer**: Use `projectReference` for customer communication and support
+3. **Monitor progress**: Receive webhook notifications for all status changes
 
 ## Authentication
 
