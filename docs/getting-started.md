@@ -21,7 +21,31 @@ We send webhooks for all significant changes in the photobook project lifecycle,
 
 We're happy to walk you through the lifecycle and explain every step in detail. Just contact us.
 
-![order-lifecycle-mermaid.png](images/project-status.png)
+```mermaid
+stateDiagram-v2
+    state fork <<fork>>
+    state join <<join>>
+    state download <<choice>>
+
+    [*] --> fork: POST /papi/projects
+    fork --> download
+    fork --> PRODUCTS_SELECTED
+    download --> TRANSMITTED
+    download --> TRANSMISSION_FAILED
+    TRANSMISSION_FAILED --> [*]
+    TRANSMITTED --> join
+    PRODUCTS_SELECTED --> join
+    join --> DRAFT_CREATED
+    DRAFT_CREATED --> REVIEW_PENDING
+    REVIEW_PENDING --> CHANGES_REQUESTED
+    CHANGES_REQUESTED --> DRAFT_CREATED
+    REVIEW_PENDING --> ORDERED
+    ORDERED --> IN_PRODUCTION
+    IN_PRODUCTION --> SHIPPED
+    SHIPPED --> [*]
+```
+
+A customer can order the same project again. Then you receive **ORDERED**, **IN_PRODUCTION** and **SHIPPED** again, with new `eventId`s.
 
 ## Project Flow Overview
 
