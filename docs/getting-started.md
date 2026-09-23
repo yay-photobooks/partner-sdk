@@ -45,7 +45,7 @@ stateDiagram-v2
     SHIPPED --> [*]
 ```
 
-A customer can order the same project again. Then you receive **ORDERED**, **IN_PRODUCTION** and **SHIPPED** again, with a new `x-outpost-event-id`.
+A customer can order the same project again. Then you receive **ORDERED**, **IN_PRODUCTION** and **SHIPPED** again, with a new `webhook-id`.
 
 ## Project Flow Overview
 

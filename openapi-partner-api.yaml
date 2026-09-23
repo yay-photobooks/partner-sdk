@@ -283,42 +283,47 @@ webhooks:
 
         **Delivery:**
         - Respond with a 2xx status. On any other response we retry with exponential backoff.
-        - Delivery is at-least-once. A retry sends the same `x-outpost-event-id` again. Use it to ignore duplicates.
+        - Delivery is at-least-once. A retry sends the same `webhook-id` again. Use it to ignore duplicates.
 
         **Signature:**
-        `x-outpost-signature` is `v0=<hex HMAC-SHA256 of the raw request body>`, made with the signing secret of your webhook.
-        During a secret rotation, the header contains two signatures, separated by a comma. Accept the request if one of them is valid.
+        We sign each request as defined by [Standard Webhooks](https://www.standardwebhooks.com/).
+        Use one of the official Standard Webhooks libraries to verify it with your signing secret (`whsec_...`).
+
+        `webhook-signature` is `v1,<base64 HMAC-SHA256 of "{webhook-id}.{webhook-timestamp}.{raw body}">`.
+        During a secret rotation, the header contains two signatures, separated by a space. Accept the request if one of them is valid.
 
         Configure your webhook URL and get your signing secret in your partner settings.
       operationId: webhookProjectStatusUpdate
       tags:
         - Webhooks
       parameters:
-        - name: x-outpost-event-id
+        - name: webhook-id
           in: header
           required: true
           description: Unique ID of this status change. It stays the same for retries.
           schema:
             type: string
-        - name: x-outpost-topic
+            example: '48213'
+        - name: webhook-timestamp
+          in: header
+          required: true
+          description: Time of this delivery attempt (Unix seconds). Use `occurredAt` in the body for the time of the status change.
+          schema:
+            type: string
+            pattern: '^[0-9]+$'
+            example: '1790158500'
+        - name: webhook-signature
+          in: header
+          required: true
+          schema:
+            type: string
+            example: v1,K5oZfzN95Z9UVu1EsfQmfVNQhnkZ2pj9o9NDN/H/pI4=
+        - name: webhook-topic
           in: header
           required: true
           schema:
             type: string
             const: project.status-updated
-        - name: x-outpost-timestamp
-          in: header
-          required: true
-          description: Time of this delivery attempt (RFC 3339). Use `occurredAt` in the body for the time of the status change.
-          schema:
-            type: string
-            format: date-time
-        - name: x-outpost-signature
-          in: header
-          required: true
-          schema:
-            type: string
-            example: v0=5257a869e7ecebeda32affa62cdca3fa51cad7e77a0e56ff536d0ce8e108d8bd
       requestBody:
         required: true
         content:
