@@ -267,18 +267,6 @@ components:
         - IN_PRODUCTION
         - SHIPPED
       example: DRAFT_CREATED
-    DownloadStatus:
-      type: string
-      description: |
-        Status of photo download/processing.
-        - NONE: Before any URLs or files have been sent
-        - PENDING: Download is in progress
-        - DONE: All photos have been downloaded and processed
-      enum:
-        - NONE
-        - PENDING
-        - DONE
-      example: DONE
   securitySchemes:
     credentials:
       type: http
@@ -313,7 +301,6 @@ webhooks:
                 - occurredAt
                 - projectId
                 - status
-                - downloadStatus
               properties:
                 eventId:
                   type: integer
@@ -332,9 +319,6 @@ webhooks:
                 status:
                   $ref: '#/components/schemas/ProjectStatus'
                   description: Current status of the project
-                downloadStatus:
-                  $ref: '#/components/schemas/DownloadStatus'
-                  description: Status of photo download/processing
                 failedPhotos:
                   type: array
                   description: Only sent with status `TRANSMISSION_FAILED`. The photos we could not download.
