@@ -281,15 +281,44 @@ webhooks:
       description: |
         This is a request sent **from YAY to your server** when a project's status changes.
 
-        **Retry behavior:**
-        - We retry up to 2 times if you don't respond with 200
-        - We stop immediately on 403 or 404 responses
-        - A retry sends the same `eventId` again. Use it to ignore duplicates.
+        **Delivery:**
+        - Respond with a 2xx status. On any other response we retry with exponential backoff.
+        - Delivery is at-least-once. A retry sends the same `x-outpost-event-id` again. Use it to ignore duplicates.
 
-        Configure your webhook URL in your partner settings.
+        **Signature:**
+        `x-outpost-signature` is `v0=<hex HMAC-SHA256 of the raw request body>`, made with the signing secret of your webhook.
+        During a secret rotation, the header contains two signatures, separated by a comma. Accept the request if one of them is valid.
+
+        Configure your webhook URL and get your signing secret in your partner settings.
       operationId: webhookProjectStatusUpdate
       tags:
         - Webhooks
+      parameters:
+        - name: x-outpost-event-id
+          in: header
+          required: true
+          description: Unique ID of this status change. It stays the same for retries.
+          schema:
+            type: string
+        - name: x-outpost-topic
+          in: header
+          required: true
+          schema:
+            type: string
+            const: project.status-updated
+        - name: x-outpost-timestamp
+          in: header
+          required: true
+          description: Time of this delivery attempt (RFC 3339). Use `occurredAt` in the body for the time of the status change.
+          schema:
+            type: string
+            format: date-time
+        - name: x-outpost-signature
+          in: header
+          required: true
+          schema:
+            type: string
+            example: v0=5257a869e7ecebeda32affa62cdca3fa51cad7e77a0e56ff536d0ce8e108d8bd
       requestBody:
         required: true
         content:
@@ -297,17 +326,10 @@ webhooks:
             schema:
               type: object
               required:
-                - eventId
                 - occurredAt
                 - projectId
                 - status
               properties:
-                eventId:
-                  type: integer
-                  format: int64
-                  minimum: 1
-                  example: 48213
-                  description: Unique ID of this status change. It stays the same for retries.
                 occurredAt:
                   type: string
                   format: date-time
