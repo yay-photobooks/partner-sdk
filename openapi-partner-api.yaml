@@ -262,7 +262,6 @@ components:
         - ORDERED
         - IN_PRODUCTION
         - SHIPPED
-        - FULFILLED
       example: DRAFT_CREATED
     DownloadStatus:
       type: string
@@ -287,15 +286,13 @@ webhooks:
   projectStatusUpdate:
     post:
       summary: Project status update
-      x-status: coming-soon
       description: |
-        **⚠️ Coming Soon** - This webhook is not yet available.
-
         This is a request sent **from YAY to your server** when a project's status changes.
 
         **Retry behavior:**
         - We retry up to 2 times if you don't respond with 200
         - We stop immediately on 403 or 404 responses
+        - A retry sends the same `eventId` again. Use it to ignore duplicates.
 
         Configure your webhook URL in your partner settings.
       operationId: webhookProjectStatusUpdate
@@ -308,10 +305,23 @@ webhooks:
             schema:
               type: object
               required:
+                - eventId
+                - occurredAt
                 - projectId
                 - status
                 - downloadStatus
               properties:
+                eventId:
+                  type: integer
+                  format: int64
+                  minimum: 1
+                  example: 48213
+                  description: Unique ID of this status change. It stays the same for retries.
+                occurredAt:
+                  type: string
+                  format: date-time
+                  example: '2026-09-23T10:15:00+02:00'
+                  description: Time when the status changed
                 projectId:
                   $ref: '#/components/schemas/UUIDv4'
                   description: The project this status update relates to

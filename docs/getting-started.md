@@ -54,7 +54,7 @@ The customer can either:
 Once the customer approves the layout and completes payment, the project becomes an **ORDERED** status with confirmed purchase.
 
 ### 8. Production & Fulfillment
-The photobook enters production (**IN_PRODUCTION**), is shipped to the customer (**SHIPPED**), and finally marked as **FULFILLED** when delivery is complete.
+The photobook enters production (**IN_PRODUCTION**) and is shipped to the customer (**SHIPPED**). **SHIPPED** is the final status.
 
 ## Key Benefits
 
