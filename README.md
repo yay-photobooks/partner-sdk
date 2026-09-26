@@ -124,6 +124,69 @@ if ($result->isSuccess()) {
 }
 ```
 
+## Webhooks
+
+When the status of a project changes, we send a `POST` request to your webhook URL.
+The SDK does not receive webhooks: handle them in your own application.
+
+**Setup:** log in to the partner area and open [`/admin/webhooks`](https://portal.yayphotobooks.com/admin/webhooks) (sandbox: [`/admin/webhooks`](https://sandbox.yayphotobooks.com/admin/webhooks)).
+Add your URL there and copy the signing secret (`whsec_...`).
+
+**Request:**
+
+```http
+POST /your/webhook/url HTTP/1.1
+Content-Type: application/json
+webhook-id: 3f1c9a4e-8b2d-4c6f-9e7a-1d5b8c0f2a94
+webhook-timestamp: 1790158500
+webhook-signature: v1,K5oZfzN95Z9UVu1EsfQmfVNQhnkZ2pj9o9NDN/H/pI4=
+webhook-topic: project.status-updated
+
+{
+  "occurredAt": "2026-09-23T08:17:30+00:00",
+  "projectId": "550e8400-e29b-41d4-a716-446655440000",
+  "status": "TRANSMISSION_FAILED",
+  "failedPhotos": [
+    { "url": "https://partner.example/photos/123.jpg", "error": "HTTP 404" }
+  ]
+}
+```
+
+`failedPhotos` is only sent with `TRANSMISSION_FAILED`.
+
+**Verify the signature** as defined by [Standard Webhooks](https://www.standardwebhooks.com/), for example with `composer require standard-webhooks/standard-webhooks`:
+
+```php
+use StandardWebhooks\Webhook;
+use StandardWebhooks\Exception\WebhookVerificationException;
+
+$webhook = new Webhook(getenv('YAY_WEBHOOK_SECRET')); // whsec_...
+
+try {
+    $payload = $webhook->verify(
+        file_get_contents('php://input'), // the raw body, not re-encoded JSON
+        [
+            'webhook-id' => $_SERVER['HTTP_WEBHOOK_ID'] ?? '',
+            'webhook-timestamp' => $_SERVER['HTTP_WEBHOOK_TIMESTAMP'] ?? '',
+            'webhook-signature' => $_SERVER['HTTP_WEBHOOK_SIGNATURE'] ?? '',
+        ],
+    );
+} catch (WebhookVerificationException) {
+    http_response_code(401);
+    exit;
+}
+
+// $payload['projectId'], $payload['status'], $payload['occurredAt']
+http_response_code(204);
+```
+
+**Rules:**
+- Respond with a 2xx status. On any other response we retry with exponential backoff.
+- Delivery is at-least-once. Use `webhook-id` to ignore duplicates.
+- A project can receive a status more than once: a new preview after changes sends `REVIEW_PENDING` again, and a new order sends `ORDERED`, `IN_PRODUCTION` and `SHIPPED` again.
+
+See the [project lifecycle](docs/getting-started.md) and the full schema in [`openapi-partner-api.yaml`](openapi-partner-api.yaml) (`webhooks` section).
+
 ## Environment Configuration
 
 ### Required Environment Variables

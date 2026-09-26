@@ -329,6 +329,30 @@ webhooks:
         required: true
         content:
           application/json:
+            examples:
+              transmitted:
+                summary: All photos downloaded
+                value:
+                  occurredAt: '2026-09-23T08:15:00+00:00'
+                  projectId: 550e8400-e29b-41d4-a716-446655440000
+                  status: TRANSMITTED
+              transmissionFailed:
+                summary: Some photos could not be downloaded
+                value:
+                  occurredAt: '2026-09-23T08:17:30+00:00'
+                  projectId: 550e8400-e29b-41d4-a716-446655440000
+                  status: TRANSMISSION_FAILED
+                  failedPhotos:
+                    - url: 'https://partner.example/photos/123.jpg'
+                      error: HTTP 404
+                    - url: 'https://partner.example/photos/124.jpg'
+                      error: HTTP 503
+              shipped:
+                summary: Order shipped
+                value:
+                  occurredAt: '2026-10-02T13:40:00+00:00'
+                  projectId: 550e8400-e29b-41d4-a716-446655440000
+                  status: SHIPPED
             schema:
               type: object
               required:
