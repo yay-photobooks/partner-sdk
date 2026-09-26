@@ -32,7 +32,7 @@ stateDiagram-v2
     fork --> PRODUCTS_SELECTED
     download --> TRANSMITTED
     download --> TRANSMISSION_FAILED
-    TRANSMISSION_FAILED --> [*]
+    TRANSMISSION_FAILED --> TRANSMITTED: we fix the download
     TRANSMITTED --> join
     PRODUCTS_SELECTED --> join
     join --> DRAFT_CREATED
@@ -62,7 +62,7 @@ Redirect your customer using the returned URL to our customized product selectio
 ### 3. Photo Transmission (TRANSMITTED / TRANSMISSION_FAILED)
 Provide your customer's photos by including `photoUrls` in the initial project creation request. We download the photos from your servers in the background, while your customer selects products.
 - All photos downloaded → **TRANSMITTED**
-- Some photos cannot be downloaded after all retries → **TRANSMISSION_FAILED**. The webhook lists the failed URLs in `failedPhotos`.
+- Some photos cannot be downloaded after all retries → **TRANSMISSION_FAILED**. The webhook lists the failed URLs in `failedPhotos`. You can receive it more than once. If we download the photos later, you receive **TRANSMITTED**.
 
 ### 4. Layout Creation (DRAFT_CREATED)
 Our layout team creates a professional photobook design using your customer's photos and selected format. When complete, the project moves to **DRAFT_CREATED** status.
