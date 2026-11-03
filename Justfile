@@ -40,7 +40,7 @@ fix *args='-v':
 
 # Validate OpenAPI schema
 openapi-validate:
-    npx --yes @redocly/cli lint openapi-partner-api.yaml
+    REDOCLY_TELEMETRY=off npx --yes @redocly/cli@2.71.1 lint openapi-partner-api.yaml
 
 # Prepare for commit (fix style, run checks)
 prep:
